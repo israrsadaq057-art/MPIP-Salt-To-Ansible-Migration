@@ -1,0 +1,17 @@
+﻿# Core/main.yml
+# This file imports all core sub-roles
+
+- name: Configure NTP
+  import_tasks: ../ntp/tasks/main.yml
+
+- name: Configure SSH
+  import_tasks: ../ssh/tasks/main.yml
+
+- name: Configure Users
+  import_tasks: ../users/tasks/main.yml
+
+- name: Configure Firewall
+  import_tasks: ../firewall/tasks/main.yml
+
+- name: Configure Logging
+  import_tasks: ../logging/tasks/main.yml

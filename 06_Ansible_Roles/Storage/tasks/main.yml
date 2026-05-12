@@ -1,0 +1,5 @@
+﻿# Storage/main.yml
+- import_tasks: ../zfs/tasks/main.yml
+- import_tasks: ../nfs/tasks/main.yml
+- import_tasks: ../iscsi/tasks/main.yml
+- import_tasks: ../backup/tasks/main.yml

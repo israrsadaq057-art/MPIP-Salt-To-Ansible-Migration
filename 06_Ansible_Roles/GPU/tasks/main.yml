@@ -1,0 +1,5 @@
+﻿# GPU/main.yml
+- import_tasks: ../nvidia/tasks/main.yml
+- import_tasks: ../cuda/tasks/main.yml
+- import_tasks: ../tensorflow/tasks/main.yml
+- import_tasks: ../pytorch/tasks/main.yml

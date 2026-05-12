@@ -1,0 +1,5 @@
+﻿# HPC/main.yml
+- import_tasks: ../munge/tasks/main.yml
+- import_tasks: ../slurm_controller/tasks/main.yml
+- import_tasks: ../slurm_compute/tasks/main.yml
+- import_tasks: ../lustre/tasks/main.yml

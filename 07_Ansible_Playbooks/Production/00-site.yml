@@ -27,11 +27,7 @@
   serial: 100
   roles:
     - Common
-    - Core.ntp
-    - Core.ssh
-    - Core.users
-    - Core.firewall
-    - Core.logging
+    - Core
   tags: [core, phase1]
 
 - name: "💾 PHASE 2 - STORAGE LAYER (Neubau Keller - 119 servers)"
@@ -39,10 +35,7 @@
   become: yes
   serial: 20
   roles:
-    - Storage.zfs
-    - Storage.nfs
-    - Storage.iscsi
-    - Storage.backup
+    - Storage
   tags: [storage, phase2]
 
 - name: "⚡ PHASE 3 - HPC CLUSTER (Neubau Dach - 768 servers)"
@@ -50,8 +43,7 @@
   become: yes
   serial: 50
   roles:
-    - HPC.munge
-    - HPC.slurm_compute
+    - HPC
   tags: [hpc, phase3]
 
 - name: "🎮 PHASE 4 - GPU CLUSTER (GPU nodes - 256 servers)"
@@ -59,10 +51,7 @@
   become: yes
   serial: 20
   roles:
-    - GPU.nvidia
-    - GPU.cuda
-    - GPU.tensorflow
-    - GPU.pytorch
+    - GPU
   tags: [gpu, phase4]
 
 - name: "🐳 PHASE 5 - CONTAINER PLATFORM"
@@ -72,8 +61,8 @@
   become: yes
   serial: 10
   roles:
-    - Docker.engine
-    - Kubernetes.kubeadm
+    - Docker
+    - Kubernetes
   tags: [containers, phase5]
 
 - name: "📊 PHASE 6 - MONITORING"
@@ -81,7 +70,7 @@
   become: yes
   serial: 5
   roles:
-    - Monitoring.icinga2
+    - Monitoring
   tags: [monitoring, phase6]
 
 - name: "✅ PHASE 7 - VALIDATION"
@@ -119,7 +108,7 @@
           Date: {{ ansible_date_time.iso8601 }}
           Duration: {{ (ansible_date_time.epoch | int - migration_start | int) // 60 }} minutes
           Servers Migrated: 1,247
-          Roles Deployed: 21
+          Roles Deployed: 11
           Status: SUCCESS
           ========================================
         dest: "/tmp/migration_complete_{{ ansible_date_time.date }}.txt"

@@ -26,20 +26,22 @@
     - FORWARD
     - OUTPUT
 
-- name: Set default policies
+- name: Set INPUT default policy to DROP
   iptables:
     chain: INPUT
     policy: DROP
-  - name: Set FORWARD default policy
-    iptables:
-      chain: FORWARD
-      policy: DROP
-  - name: Set OUTPUT default policy
-    iptables:
-      chain: OUTPUT
-      policy: ACCEPT
 
-- name: Allow loopback
+- name: Set FORWARD default policy to DROP
+  iptables:
+    chain: FORWARD
+    policy: DROP
+
+- name: Set OUTPUT default policy to ACCEPT
+  iptables:
+    chain: OUTPUT
+    policy: ACCEPT
+
+- name: Allow loopback traffic
   iptables:
     chain: INPUT
     in_interface: lo
@@ -58,17 +60,22 @@
     destination_port: 22
     source: "{{ item }}"
     jump: ACCEPT
-  loop: "{{ firewall_allowed_ssh }}"
+  loop: "{{ firewall_allowed_ssh | default(['10.10.40.0/24', '10.99.0.0/24']) }}"
 
-- name: Allow HTTP/HTTPS for web servers
+- name: Allow HTTP for web servers
   iptables:
     chain: INPUT
     protocol: tcp
-    destination_port: "{{ item }}"
+    destination_port: 80
     jump: ACCEPT
-  loop:
-    - 80
-    - 443
+  when: "'web' in group_names"
+
+- name: Allow HTTPS for web servers
+  iptables:
+    chain: INPUT
+    protocol: tcp
+    destination_port: 443
+    jump: ACCEPT
   when: "'web' in group_names"
 
 - name: Save iptables rules

@@ -1,0 +1,46 @@
+﻿# ntp/tasks/main.yml
+# Install and configure NTP on all servers
+
+- name: Install NTP package
+  apt:
+    name: ntp
+    state: present
+    update_cache: yes
+  when: ansible_os_family == "Debian"
+  tags: ntp
+
+- name: Install NTP on Rocky
+  yum:
+    name: chrony
+    state: present
+  when: ansible_os_family == "RedHat"
+  tags: ntp
+
+- name: Deploy NTP config from template
+  template:
+    src: ntp.conf.j2
+    dest: /etc/ntp.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: restart ntp
+  when: ansible_os_family == "Debian"
+  tags: ntp_config
+
+- name: Deploy chrony config for Rocky
+  template:
+    src: chrony.conf.j2
+    dest: /etc/chrony.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: restart chrony
+  when: ansible_os_family == "RedHat"
+  tags: ntp_config
+
+- name: Ensure NTP service is running
+  systemd:
+    name: "{{ 'ntp' if ansible_os_family == 'Debian' else 'chronyd' }}"
+    state: started
+    enabled: yes
+  tags: ntp_service

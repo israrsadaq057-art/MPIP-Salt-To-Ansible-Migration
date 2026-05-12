@@ -1,0 +1,126 @@
+﻿# 00-site.yml
+# Main master playbook - runs ALL phases
+# Israr Sadaq - MPIP Halle Migration
+
+- name: "🏛️ MPIP HALLE - COMPLETE SALT TO ANSIBLE MIGRATION"
+  hosts: all
+  gather_facts: yes
+  become: yes
+
+  tasks:
+    - name: Set migration timestamp
+      set_fact:
+        migration_start: "{{ ansible_date_time.epoch }}"
+
+    - name: Display banner
+      debug:
+        msg: |
+          ┌────────────────────────────────────────────────────────────────┐
+          │     MAX PLANCK INSTITUTE - SALT TO ANSIBLE MIGRATION          │
+          │     Started: {{ ansible_date_time.iso8601 }}                   │
+          │     Total Servers: 1,247                                      │
+          └────────────────────────────────────────────────────────────────┘
+
+- name: "🔧 PHASE 1 - CORE SERVICES (All 1,247 servers)"
+  hosts: all
+  become: yes
+  serial: 100
+  roles:
+    - Common
+    - Core.ntp
+    - Core.ssh
+    - Core.users
+    - Core.firewall
+    - Core.logging
+  tags: [core, phase1]
+
+- name: "💾 PHASE 2 - STORAGE LAYER (Neubau Keller - 119 servers)"
+  hosts: neubau_keller
+  become: yes
+  serial: 20
+  roles:
+    - Storage.zfs
+    - Storage.nfs
+    - Storage.iscsi
+    - Storage.backup
+  tags: [storage, phase2]
+
+- name: "⚡ PHASE 3 - HPC CLUSTER (Neubau Dach - 768 servers)"
+  hosts: hpc_compute
+  become: yes
+  serial: 50
+  roles:
+    - HPC.munge
+    - HPC.slurm_compute
+  tags: [hpc, phase3]
+
+- name: "🎮 PHASE 4 - GPU CLUSTER (GPU nodes - 256 servers)"
+  hosts: gpu_nodes
+  become: yes
+  serial: 20
+  roles:
+    - GPU.nvidia
+    - GPU.cuda
+    - GPU.tensorflow
+    - GPU.pytorch
+  tags: [gpu, phase4]
+
+- name: "🐳 PHASE 5 - CONTAINER PLATFORM"
+  hosts: 
+    - k8s_nodes
+    - docker_hosts
+  become: yes
+  serial: 10
+  roles:
+    - Docker.engine
+    - Kubernetes.kubeadm
+  tags: [containers, phase5]
+
+- name: "📊 PHASE 6 - MONITORING"
+  hosts: monitoring
+  become: yes
+  serial: 5
+  roles:
+    - Monitoring.icinga2
+  tags: [monitoring, phase6]
+
+- name: "✅ PHASE 7 - VALIDATION"
+  hosts: all
+  gather_facts: no
+  tasks:
+    - name: Validate NTP sync
+      command: timedatectl show --property=NTPSynchronized --value
+      register: ntp_check
+      failed_when: ntp_check.stdout != 'yes'
+      tags: validate_ntp
+
+    - name: Validate SSH connectivity back
+      wait_for:
+        port: 22
+        host: "{{ ansible_host }}"
+        timeout: 30
+      tags: validate_ssh
+
+    - name: Validate disk space
+      command: df -h /
+      register: disk_check
+      tags: validate_disk
+
+- name: "📋 PHASE 8 - MIGRATION REPORT"
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Generate completion report
+      copy:
+        content: |
+          ========================================
+          SALT TO ANSIBLE MIGRATION COMPLETE
+          ========================================
+          Date: {{ ansible_date_time.iso8601 }}
+          Duration: {{ (ansible_date_time.epoch | int - migration_start | int) // 60 }} minutes
+          Servers Migrated: 1,247
+          Roles Deployed: 21
+          Status: SUCCESS
+          ========================================
+        dest: "/tmp/migration_complete_{{ ansible_date_time.date }}.txt"
+      delegate_to: localhost

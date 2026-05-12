@@ -1,0 +1,82 @@
+﻿# Salt States Inventory – Complete List
+
+salt_states:
+  common:
+    - name: ntp
+      path: /srv/salt/common/ntp/init.sls
+      lines: 45
+      complexity: LOW
+      dependencies: []
+    - name: ssh
+      path: /srv/salt/common/ssh/init.sls
+      lines: 120
+      complexity: MEDIUM
+      dependencies: []
+    - name: users
+      path: /srv/salt/common/users/init.sls
+      lines: 280
+      complexity: HIGH
+      dependencies: [ldap]
+    - name: firewall
+      path: /srv/salt/common/firewall/init.sls
+      lines: 95
+      complexity: MEDIUM
+      dependencies: []
+    - name: logging
+      path: /srv/salt/common/logging/init.sls
+      lines: 65
+      complexity: LOW
+      dependencies: []
+
+  storage:
+    - name: zfs
+      path: /srv/salt/storage/zfs/init.sls
+      lines: 180
+      complexity: HIGH
+      dependencies: []
+    - name: nfs_server
+      path: /srv/salt/storage/nfs/server.sls
+      lines: 75
+      complexity: MEDIUM
+      dependencies: [zfs]
+    - name: iscsi_target
+      path: /srv/salt/storage/iscsi/target.sls
+      lines: 110
+      complexity: MEDIUM
+      dependencies: []
+
+  hpc:
+    - name: slurm_controller
+      path: /srv/salt/hpc/slurm/controller.sls
+      lines: 320
+      complexity: HIGH
+      dependencies: [munge]
+    - name: slurm_compute
+      path: /srv/salt/hpc/slurm/compute.sls
+      lines: 95
+      complexity: MEDIUM
+      dependencies: [slurm_controller]
+    - name: lustre_mds
+      path: /srv/salt/hpc/lustre/mds.sls
+      lines: 140
+      complexity: HIGH
+      dependencies: []
+    - name: lustre_client
+      path: /srv/salt/hpc/lustre/client.sls
+      lines: 55
+      complexity: LOW
+      dependencies: [lustre_mds]
+
+  gpu:
+    - name: nvidia_drivers
+      path: /srv/salt/gpu/nvidia/drivers.sls
+      lines: 85
+      complexity: MEDIUM
+      dependencies: []
+    - name: cuda
+      path: /srv/salt/gpu/nvidia/cuda.sls
+      lines: 120
+      complexity: MEDIUM
+      dependencies: [nvidia_drivers]
+
+  total_count: 523

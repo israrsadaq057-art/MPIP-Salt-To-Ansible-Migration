@@ -1,0 +1,14 @@
+﻿# backup.sh.j2
+#!/bin/bash
+# Managed by Ansible
+
+export BORG_PASSPHRASE={{ borg_passphrase }}
+export BORG_REPO={{ backup_path }}/{{ inventory_hostname }}
+
+borg create --stats --progress $BORG_REPO::{hostname}-{now:%Y-%m-%d_%H:%M:%S} \
+    /etc \
+    /root \
+    /var/log \
+    --exclude /var/log/journal
+
+borg prune --keep-daily 7 --keep-weekly 4 --keep-monthly 6

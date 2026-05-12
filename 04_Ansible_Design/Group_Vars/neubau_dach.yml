@@ -1,0 +1,20 @@
+﻿# neubau_dach.yml – Rooftop servers
+# 768 servers (HPC + GPU)
+
+---
+location: "Rooftop"
+temp_sensitive: true
+max_temp_celsius: 30
+
+hpc_slurm_partition: "normal"
+gpu_enabled: true
+
+slurm_controller: hpc-node-001.mpip-halle.de
+
+nvidia_driver_version: "535.154.05"
+cuda_version: "12.3"
+
+compute_node_count: 512
+gpu_node_count: 256
+
+job_timeout: 3600

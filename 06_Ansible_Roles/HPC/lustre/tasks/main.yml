@@ -1,0 +1,23 @@
+﻿# lustre/tasks/main.yml
+# Lustre parallel filesystem configuration
+
+- name: Install Lustre client packages
+  apt:
+    name:
+      - lustre-client-modules-{{ ansible_kernel }}
+      - lustre-client-utils
+    state: present
+
+- name: Create lustre mount point
+  file:
+    path: /lustre
+    state: directory
+    mode: '1777'
+
+- name: Mount lustre filesystem
+  mount:
+    path: /lustre
+    src: "{{ lustre_mgs }}@tcp:/{{ lustre_fsname }}"
+    fstype: lustre
+    opts: defaults
+    state: mounted

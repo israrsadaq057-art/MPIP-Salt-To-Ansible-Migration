@@ -1,0 +1,11 @@
+﻿# ntp/handlers/main.yml
+
+- name: restart ntp
+  systemd:
+    name: ntp
+    state: restarted
+
+- name: restart chrony
+  systemd:
+    name: chronyd
+    state: restarted

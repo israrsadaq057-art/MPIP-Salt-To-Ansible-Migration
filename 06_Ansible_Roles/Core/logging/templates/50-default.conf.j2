@@ -1,0 +1,15 @@
+﻿# 50-default.conf.j2
+# Managed by Ansible
+
+# Send all logs to central syslog server
+*.* @{{ syslog_server }}:{{ syslog_port }}
+
+# Keep local logs as well
+auth,authpriv.*                 /var/log/auth.log
+*.*;auth,authpriv.none          -/var/log/syslog
+cron.*                          /var/log/cron.log
+daemon.*                        -/var/log/daemon.log
+kern.*                          -/var/log/kern.log
+lpr.*                           -/var/log/lpr.log
+mail.*                          -/var/log/mail.log
+user.*                          -/var/log/user.log

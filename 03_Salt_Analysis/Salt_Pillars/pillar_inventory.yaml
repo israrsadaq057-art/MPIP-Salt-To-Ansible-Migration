@@ -1,0 +1,46 @@
+﻿# Salt Pillars Inventory – All 89 pillar files
+# Pillars contain variables and secrets. Not in git (normally)
+
+pillar_breakdown:
+  
+  secrets:
+    - passwords.sls
+    - api_keys.sls
+    - ssh_keys.sls
+    - ssl_certs.sls
+    - license_keys.sls
+  
+  configs:
+    - ntp_servers.sls
+    - dns_servers.sls
+    - users_list.sls
+    - groups_list.sls
+    - firewall_rules.sls
+  
+  locations:
+    - neubau_dach.sls
+    - neubau_keller.sls
+    - altbau_eg.sls
+    - altbau_og.sls
+
+  roles:
+    - hpc_compute.sls
+    - gpu_nodes.sls
+    - storage_nodes.sls
+    - k8s_nodes.sls
+    - monitoring_nodes.sls
+
+pillar_example_ntp:
+  ntp_servers:
+    - 0.de.pool.ntp.org
+    - 1.de.pool.ntp.org
+    - 2.de.pool.ntp.org
+
+pillar_example_users:
+  admin_ssh_keys:
+    - user: israr
+      key: "ssh-rsa AAAAB3NzaC1yc2..."
+    - user: hpcadmin
+      key: "ssh-rsa AAAAC3NzaC1yc2..."
+
+total_pillars: 89

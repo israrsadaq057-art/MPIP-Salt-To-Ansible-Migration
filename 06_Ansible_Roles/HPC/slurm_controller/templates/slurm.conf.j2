@@ -1,0 +1,40 @@
+﻿# slurm.conf.j2
+# Managed by Ansible
+# SLURM configuration for MPIP Halle
+
+ClusterName={{ slurm_cluster_name | default('mpip-hpc') }}
+ControlMachine={{ slurm_controller }}
+ControlAddr={{ hostvars[slurm_controller]['ansible_host'] }}
+
+SlurmUser=slurm
+SlurmctldPort=6817
+SlurmdPort=6818
+AuthType=auth/munge
+CryptoType=crypto/openssl
+
+SchedulerType=sched/backfill
+SelectType=select/cons_res
+SelectTypeParameters=CR_Core_Memory
+
+AccountingStorageType=accounting_storage/slurmdbd
+AccountingStorageHost={{ slurm_controller }}
+AccountingStoragePort=6819
+
+JobCompType=jobcomp/filetxt
+JobCompLoc=/var/log/slurm/job_completions
+
+SlurmctldDebug=info
+SlurmctldLogFile=/var/log/slurm/slurmctld.log
+SlurmdDebug=info
+SlurmdLogFile=/var/log/slurm/slurmd.log
+
+# Partitions
+PartitionName=normal Nodes=ALL Default=YES MaxTime=24:00:00 State=UP
+PartitionName=long Nodes=ALL MaxTime=168:00:00 State=UP
+PartitionName=gpu Nodes=gpu Nodes=gpu-node-[001-256] Default=NO MaxTime=48:00:00 State=UP
+
+# Compute nodes (512)
+NodeName=hpc-node-[001-512] CPUs=64 RealMemory=256000 State=UNKNOWN
+
+# GPU nodes (256) with GRES
+NodeName=gpu-node-[001-256] CPUs=128 RealMemory=512000 Gres=gpu:4 State=UNKNOWN

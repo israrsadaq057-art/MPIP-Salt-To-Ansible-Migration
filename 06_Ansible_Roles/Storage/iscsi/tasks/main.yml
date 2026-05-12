@@ -1,0 +1,31 @@
+﻿# iscsi/tasks/main.yml
+# iSCSI target configuration for storage network
+
+- name: Install targetcli packages
+  apt:
+    name: targetcli-fb
+    state: present
+
+- name: Create iSCSI backstores
+  command: targetcli /backstores/block create {{ item.name }} {{ item.device }}
+  loop: "{{ iscsi_backstores | default([]) }}"
+  creates: "/sys/kernel/config/target/core/{{ item.name }}"
+
+- name: Create iSCSI targets
+  command: targetcli /iscsi create {{ item.iqn }}
+  loop: "{{ iscsi_targets | default([]) }}"
+  creates: "/sys/kernel/config/target/iscsi/{{ item.iqn }}"
+
+- name: Add LUNs to targets
+  command: targetcli /iscsi/{{ item.iqn }}/tpg1/luns create /backstores/block/{{ item.backstore }}
+  loop: "{{ iscsi_targets | default([]) }}"
+
+- name: Set ACLs for initiators
+  command: targetcli /iscsi/{{ item.iqn }}/tpg1/acls create {{ item.initiator_name }}
+  loop: "{{ iscsi_targets | default([]) }}"
+
+- name: Enable iSCSI target service
+  systemd:
+    name: target
+    enabled: yes
+    state: started

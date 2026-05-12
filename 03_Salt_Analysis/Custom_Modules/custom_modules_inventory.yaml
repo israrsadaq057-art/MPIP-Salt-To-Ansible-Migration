@@ -1,0 +1,64 @@
+﻿# Custom Salt Modules Inventory
+
+custom_modules:
+  - name: quantum_api.py
+    path: /srv/salt/_modules/quantum_api.py
+    lines: 450
+    functions:
+      - submit_quantum_job()
+      - get_qubit_status()
+      - calibrate_qubits()
+    dependencies: [requests, numpy, qiskit]
+    conversion_strategy: "Rewrite as Ansible module using module_utils"
+    estimated_hours: 16
+
+  - name: slurm_api.py
+    path: /srv/salt/_modules/slurm_api.py
+    lines: 380
+    functions:
+      - submit_heterogeneous_job()
+      - get_job_efficiency()
+      - update_partition()
+    dependencies: [subprocess, json, yaml]
+    conversion_strategy: "Rewrite as Ansible module with subprocess calls"
+    estimated_hours: 14
+
+  - name: lustre_api.py
+    path: /srv/salt/_modules/lustre_api.py
+    lines: 280
+    functions:
+      - create_lustre_pool()
+      - set_stripe_layout()
+      - get_ost_usage()
+    dependencies: [subprocess, re]
+    conversion_strategy: "Ansible module with command module"
+    estimated_hours: 10
+
+  - name: storage_api.py
+    path: /srv/salt/_modules/storage_api.py
+    lines: 220
+    functions:
+      - create_zfs_snapshot()
+      - replicate_zfs_pool()
+      - export_nfs_share()
+    dependencies: [subprocess]
+    conversion_strategy: "Direct conversion to Ansible modules"
+    estimated_hours: 8
+
+  - name: research_utils.py
+    path: /srv/salt/_modules/research_utils.py
+    lines: 150
+    functions:
+      - setup_conda_env()
+      - install_research_package()
+      - validate_license_server()
+    dependencies: [requests, yaml]
+    conversion_strategy: "Ansible module with uri module"
+    estimated_hours: 6
+
+  - name: [10 more modules...]
+    path: /srv/salt/_modules/
+    estimated_total_hours: 60
+
+total_custom_modules: 15
+total_estimated_hours: 114

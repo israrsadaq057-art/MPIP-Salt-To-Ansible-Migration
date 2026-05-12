@@ -1,0 +1,25 @@
+﻿# 06-monitoring.yml
+# Monitoring stack
+
+- name: "MONITORING DEPLOYMENT"
+  hosts: monitoring
+  become: yes
+  serial: 3
+  roles:
+    - Monitoring.icinga2
+  tags: [monitoring]
+
+- name: "MONITORING VALIDATION"
+  hosts: monitoring[0]
+  gather_facts: no
+  tasks:
+    - name: Check Icinga2
+      command: systemctl status icinga2
+      register: icinga_status
+      failed_when: "'inactive' in icinga_status.stdout"
+
+    - name: Check API
+      uri:
+        url: https://localhost:5665/v1/status
+        validate_certs: no
+      register: icinga_api

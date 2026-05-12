@@ -1,0 +1,29 @@
+﻿# 01-core.yml
+# Core services only - safe to run first
+# Applies to ALL 1,247 servers
+
+- name: "CORE SERVICES DEPLOYMENT"
+  hosts: all
+  become: yes
+  serial: 100
+  roles:
+    - Common
+    - Core.ntp
+    - Core.ssh
+    - Core.users
+  tags: [core]
+
+- name: "CORE VALIDATION"
+  hosts: all
+  gather_facts: no
+  tasks:
+    - name: Check NTP
+      command: ntpq -p
+      register: ntp_status
+      failed_when: "'no server suitable' in ntp_status.stdout"
+
+    - name: Check SSH
+      wait_for:
+        port: 22
+        host: "{{ ansible_host }}"
+        timeout: 10

@@ -1,0 +1,41 @@
+﻿# nfs/tasks/main.yml
+# NFS server configuration
+
+- name: Install NFS server packages
+  apt:
+    name:
+      - nfs-kernel-server
+      - nfs-common
+    state: present
+
+- name: Create export directories
+  file:
+    path: "{{ item.path }}"
+    state: directory
+    owner: "{{ item.owner | default('nobody') }}"
+    group: "{{ item.group | default('nogroup') }}"
+    mode: "{{ item.mode | default('0755') }}"
+  loop: "{{ nfs_exports | default([]) }}"
+
+- name: Deploy exports configuration
+  template:
+    src: exports.j2
+    dest: /etc/exports
+    owner: root
+    group: root
+    mode: '0644'
+  notify: reload nfs
+
+- name: Ensure NFS kernel module is loaded
+  modprobe:
+    name: nfsd
+    state: present
+
+- name: Start NFS services
+  systemd:
+    name: "{{ item }}"
+    enabled: yes
+    state: started
+  loop:
+    - nfs-server
+    - nfs-kernel-server

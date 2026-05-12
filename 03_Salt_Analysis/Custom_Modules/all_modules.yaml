@@ -1,0 +1,57 @@
+﻿# Custom Salt Modules – 15 modules we wrote
+# Location: /srv/salt/_modules/
+
+custom_modules_list:
+
+  quantum_api.py:
+    lines: 450
+    functions: submit_quantum_job, get_qubit_status, calibrate_qubits
+    dependencies: requests, numpy, qiskit
+    needs_rewrite: yes
+    notes: "uses __salt__ to call cmd.run"
+
+  slurm_api.py:
+    lines: 380
+    functions: submit_heterogeneous_job, get_job_efficiency, update_partition
+    dependencies: subprocess, json
+    needs_rewrite: yes
+    notes: "calls slurm commands direct"
+
+  lustre_api.py:
+    lines: 280
+    functions: create_lustre_pool, set_stripe_layout, get_ost_usage
+    dependencies: subprocess, re
+    needs_rewrite: yes
+    notes: "lctl commands"
+
+  storage_api.py:
+    lines: 220
+    functions: create_zfs_snapshot, replicate_zfs_pool, export_nfs_share
+    dependencies: subprocess
+    needs_rewrite: yes
+    notes: "zfs and exportfs commands"
+
+  research_utils.py:
+    lines: 150
+    functions: setup_conda_env, install_research_package, validate_license_server
+    dependencies: requests, yaml
+    needs_rewrite: yes
+
+  netapp_api.py:
+    lines: 200
+    functions: create_volume, set_export_policy, create_snapshot
+    dependencies: netapp_lib
+    needs_rewrite: yes
+
+  isilon_api.py:
+    lines: 180
+    functions: create_directory, set_quota, set_acl
+    dependencies: requests
+    needs_rewrite: yes
+
+  # plus 8 more modules (total 15)
+  # names: gpu_monitor.py, license_check.py, backup_notify.py, etc.
+
+total_modules: 15
+total_lines: ~3500
+estimated_rewrite_hours: 80

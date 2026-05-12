@@ -1,0 +1,58 @@
+﻿# Common role tasks
+# Applied to ALL 1,247 servers
+# Israr - basic hardening
+
+- name: Update apt cache
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+  when: ansible_os_family == "Debian"
+
+- name: Install base packages
+  package:
+    name:
+      - curl
+      - wget
+      - vim
+      - htop
+      - git
+      - rsync
+      - net-tools
+      - ca-certificates
+    state: present
+
+- name: Set timezone to Europe/Berlin
+  timezone:
+    name: Europe/Berlin
+
+- name: Configure sysctl settings
+  sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    state: present
+    reload: yes
+  loop:
+    - { name: 'net.ipv4.tcp_syncookies', value: '1' }
+    - { name: 'net.ipv4.tcp_tw_reuse', value: '1' }
+    - { name: 'vm.swappiness', value: '10' }
+    - { name: 'net.core.somaxconn', value: '1024' }
+
+- name: Ensure /etc/hosts has localhost entry
+  lineinfile:
+    path: /etc/hosts
+    regexp: '^127\.0\.0\.1'
+    line: '127.0.0.1 localhost localhost.localdomain {{ ansible_hostname }}'
+
+- name: Create ansible user if not exists
+  user:
+    name: ansible
+    state: present
+    groups: sudo
+    shell: /bin/bash
+    create_home: yes
+
+- name: Add ansible user SSH key
+  authorized_key:
+    user: ansible
+    key: "{{ lookup('file', '~/.ssh/ansible_key.pub') }}"
+    state: present

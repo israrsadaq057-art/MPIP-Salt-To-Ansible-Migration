@@ -1,0 +1,26 @@
+﻿# 02-storage.yml
+# Storage layer only - Neubau Keller
+
+- name: "STORAGE LAYER DEPLOYMENT"
+  hosts: neubau_keller
+  become: yes
+  serial: 10
+  roles:
+    - Storage.zfs
+    - Storage.nfs
+    - Storage.iscsi
+    - Storage.backup
+  tags: [storage]
+
+- name: "STORAGE VALIDATION"
+  hosts: neubau_keller
+  gather_facts: no
+  tasks:
+    - name: Check ZFS pools
+      command: zpool list
+      register: zpool_status
+      failed_when: "'No pools available' in zpool_status.stdout"
+
+    - name: Check NFS exports
+      command: exportfs -v
+      register: nfs_status

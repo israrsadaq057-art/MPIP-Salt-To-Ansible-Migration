@@ -1,0 +1,32 @@
+﻿# users/tasks/main.yml
+# User management based on Salt pillars
+
+- name: Create system groups
+  group:
+    name: "{{ item }}"
+    state: present
+    system: yes
+  loop:
+    - slurm
+    - lustre
+    - docker
+    - k8s
+
+- name: Create admin users
+  user:
+    name: "{{ item.name }}"
+    uid: "{{ item.uid }}"
+    groups: "{{ item.groups | join(',') }}"
+    shell: "{{ item.shell }}"
+    state: present
+    create_home: yes
+  loop: "{{ admin_users }}"
+  when: admin_users is defined
+
+- name: Deploy SSH keys for admin users
+  authorized_key:
+    user: "{{ item.name }}"
+    key: "{{ item.ssh_key }}"
+    state: present
+  loop: "{{ admin_users }}"
+  when: admin_users is defined and item.ssh_key is defined

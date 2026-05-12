@@ -1,0 +1,6 @@
+﻿# munge/handlers/main.yml
+
+- name: restart munge
+  systemd:
+    name: munge
+    state: restarted

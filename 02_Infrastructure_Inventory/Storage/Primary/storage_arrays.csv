@@ -1,0 +1,7 @@
+﻿Name,IP_Address,Building,Room,Type,Capacity,Protocol,Racks
+zfs-01.mpip-halle.de,10.30.10.1,Neubau,Keller,ZFS,1.2 PB,NFS,iSCSI,C01
+zfs-02.mpip-halle.de,10.30.10.2,Neubau,Keller,ZFS,1.2 PB,NFS,iSCSI,C01
+zfs-03.mpip-halle.de,10.30.10.3,Neubau,Keller,ZFS,1.2 PB,NFS,iSCSI,C02
+zfs-04.mpip-halle.de,10.30.10.4,Neubau,Keller,ZFS,1.2 PB,NFS,iSCSI,C02
+netapp-01.mpip-halle.de,10.30.10.10,Altbau,Erdgeschoss,NetApp AFF A250,500 TB,NFS,SMB,E01
+isilon-01.mpip-halle.de,10.30.10.20,Altbau,Erdgeschoss,Dell Isilon,800 TB,NFS,E02

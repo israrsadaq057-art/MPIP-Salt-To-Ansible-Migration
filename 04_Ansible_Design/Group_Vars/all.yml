@@ -1,0 +1,52 @@
+﻿# all.yml – Global variables for every server
+# Applies to ALL 1,247 servers
+
+---
+ntp_servers:
+  - 0.de.pool.ntp.org
+  - 1.de.pool.ntp.org
+  - 2.de.pool.ntp.org
+
+dns_servers:
+  - 10.10.20.10
+  - 10.10.20.11
+  - 8.8.8.8
+
+syslog_server: 10.50.10.50
+syslog_port: 514
+
+timezone: Europe/Berlin
+
+admin_users:
+  - name: israr
+    uid: 1001
+    groups: [sudo, adm]
+    shell: /bin/bash
+  - name: hpcadmin
+    uid: 1002
+    groups: [slurm, lustre]
+  - name: storageadmin
+    uid: 1003
+    groups: [disk, backup]
+
+packages_base:
+  - curl
+  - wget
+  - vim
+  - htop
+  - git
+  - rsync
+  - net-tools
+
+firewall_allowed_ssh:
+  - 10.10.40.0/24
+  - 10.99.0.0/24
+
+monitoring_servers:
+  - 10.50.10.1
+  - 10.50.10.2
+
+backup_server: 10.60.10.1
+backup_path: /backup/ansible
+
+ansible_managed: "Ansible managed: {file} on {host}"

@@ -1,0 +1,27 @@
+﻿# cuda/tasks/main.yml
+# CUDA toolkit installation
+
+- name: Download CUDA installer
+  get_url:
+    url: https://developer.download.nvidia.com/compute/cuda/12.3.0/local_installers/cuda_12.3.0_535.104.05_linux.run
+    dest: /tmp/cuda_installer.run
+    mode: '0755'
+
+- name: Install CUDA toolkit
+  command: /tmp/cuda_installer.run --silent --toolkit
+  args:
+    creates: /usr/local/cuda-12.3
+
+- name: Set CUDA environment variables
+  copy:
+    content: |
+      export PATH=/usr/local/cuda-12.3/bin:$PATH
+      export LD_LIBRARY_PATH=/usr/local/cuda-12.3/lib64:$LD_LIBRARY_PATH
+    dest: /etc/profile.d/cuda.sh
+    mode: '0644'
+
+- name: Install CUDA samples for testing
+  get_url:
+    url: https://developer.download.nvidia.com/compute/cuda/12.3.0/local_installers/cuda_12.3.0_535.104.05_linux.run
+    dest: /tmp/cuda_samples.run
+    mode: '0755'

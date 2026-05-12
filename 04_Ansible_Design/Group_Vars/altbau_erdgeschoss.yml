@@ -1,0 +1,24 @@
+﻿# altbau_erdgeschoss.yml – Ground floor
+# Critical services: DC, DNS, DHCP, SQL, Exchange
+
+---
+location: "Altbau Ground Floor"
+critical: true
+
+ad_domain: mpip-halle.local
+ad_admin_user: administrator
+
+dns_zones:
+  - mpip-halle.de
+  - 10.in-addr.arpa
+
+dhcp_subnets:
+  - network: 10.10.10.0/24
+    range: 10.10.10.50-10.10.10.200
+    gateway: 10.10.10.1
+  - network: 10.20.10.0/24
+    range: 10.20.10.50-10.20.10.200
+    gateway: 10.20.10.1
+
+sql_instances: 12
+exchange_version: "2019"

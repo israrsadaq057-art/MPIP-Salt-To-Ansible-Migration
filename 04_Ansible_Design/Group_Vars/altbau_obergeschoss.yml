@@ -1,0 +1,17 @@
+﻿# altbau_obergeschoss.yml – Upper floor
+# K8s, Docker, Web, Monitoring
+
+---
+location: "Altbau Upper Floor"
+
+k8s_version: "1.28"
+calico_version: "3.26"
+
+docker_storage_driver: overlay2
+docker_registry: registry.mpip-halle.de:5000
+
+web_servers_count: 35
+monitoring_retention_days: 90
+
+grafana_admin_password: "{{ vault_grafana_password }}"
+prometheus_scrape_interval: 15s

@@ -1,0 +1,55 @@
+﻿# .gitignore for Ansible project
+# Israr Sadaq - MPIP Halle
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.so
+
+# Ansible
+*.retry
+ansible.log
+*.log
+
+# Vault secrets
+*.vault
+*vault.yml
+*password*
+*secret*
+
+# Backup files
+*.bak
+*.backup
+*.old
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.sublime-*
+
+# Test output
+test_output/
+*.out
+
+# Local inventory (don't commit real IPs to public)
+04_Ansible_Design/Inventory/production_hosts.yml
+!04_Ansible_Design/Inventory/production_hosts.yml.template
+
+# Private keys
+*.pem
+*.key
+*.pub
+
+# Logs
+logs/
+*.log

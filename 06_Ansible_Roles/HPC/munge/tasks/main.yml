@@ -1,0 +1,30 @@
+﻿# munge/tasks/main.yml
+# Munge authentication for SLURM cluster
+
+- name: Install munge packages
+  apt:
+    name:
+      - munge
+      - libmunge-dev
+    state: present
+
+- name: Create munge key if not exists
+  command: create-munge-key
+  args:
+    creates: /etc/munge/munge.key
+
+- name: Deploy munge key from controller
+  copy:
+    src: "{{ munge_key_source }}"
+    dest: /etc/munge/munge.key
+    owner: munge
+    group: munge
+    mode: '0400'
+  when: munge_key_source is defined
+  notify: restart munge
+
+- name: Ensure munge service is running
+  systemd:
+    name: munge
+    state: started
+    enabled: yes

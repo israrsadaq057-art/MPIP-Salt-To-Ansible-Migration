@@ -1,0 +1,6 @@
+﻿# logging/handlers/main.yml
+
+- name: restart rsyslog
+  systemd:
+    name: rsyslog
+    state: restarted

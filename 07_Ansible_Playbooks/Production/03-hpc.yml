@@ -1,0 +1,32 @@
+﻿# 03-hpc.yml
+# HPC cluster - Neubau Dach
+
+- name: "HPC CLUSTER DEPLOYMENT"
+  hosts: hpc_compute
+  become: yes
+  serial: 50
+  roles:
+    - HPC.munge
+    - HPC.slurm_compute
+  tags: [hpc]
+
+- name: "SLURM CONTROLLER (Separate)"
+  hosts: slurm_controller
+  become: yes
+  serial: 1
+  roles:
+    - HPC.slurm_controller
+  tags: [hpc_controller]
+
+- name: "HPC VALIDATION"
+  hosts: slurm_controller
+  gather_facts: no
+  tasks:
+    - name: Check SLURM nodes
+      command: sinfo
+      register: slurm_nodes
+      failed_when: "'down' in slurm_nodes.stdout"
+
+    - name: Submit test job
+      command: srun -N1 hostname
+      register: test_job

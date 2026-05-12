@@ -1,0 +1,24 @@
+﻿# 05-kubernetes.yml
+# Kubernetes cluster
+
+- name: "KUBERNETES DEPLOYMENT"
+  hosts: k8s_nodes
+  become: yes
+  serial: 5
+  roles:
+    - Docker.engine
+    - Kubernetes.kubeadm
+  tags: [kubernetes]
+
+- name: "K8S VALIDATION"
+  hosts: k8s_masters[0]
+  gather_facts: no
+  tasks:
+    - name: Check nodes
+      command: kubectl get nodes
+      register: k8s_nodes_status
+      failed_when: "'NotReady' in k8s_nodes_status.stdout"
+
+    - name: Check pods
+      command: kubectl get pods --all-namespaces
+      register: k8s_pods

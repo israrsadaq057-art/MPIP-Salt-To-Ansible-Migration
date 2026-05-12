@@ -1,0 +1,3 @@
+﻿Hostname,IP_Address,Building,Model,Mode,Interfaces,Throughput
+fw-active.mpip-halle.de,10.99.0.100,Neubau,Keller,Cisco Firepower 9300,Active-Active,8x 40G,120 Gbps
+fw-passive.mpip-halle.de,10.99.0.101,Neubau,Keller,Cisco Firepower 9300,Active-Active,8x 40G,120 Gbps

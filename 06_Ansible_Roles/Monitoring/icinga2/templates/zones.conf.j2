@@ -1,0 +1,16 @@
+﻿# zones.conf.j2
+# Managed by Ansible
+
+object Zone "master" {
+  endpoints = [ "{{ ansible_hostname }}" ]
+}
+
+object Endpoint "{{ ansible_hostname }}" {
+  host = "{{ ansible_host }}"
+  port = 5665
+}
+
+object ApiListener "api" {
+  accept_config = true
+  accept_commands = true
+}

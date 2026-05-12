@@ -1,0 +1,19 @@
+﻿# logging/tasks/main.yml
+# Rsyslog configuration forward to central server
+
+- name: Install rsyslog
+  apt:
+    name: rsyslog
+    state: present
+
+- name: Configure rsyslog to forward to central server
+  template:
+    src: 50-default.conf.j2
+    dest: /etc/rsyslog.d/50-default.conf
+  notify: restart rsyslog
+
+- name: Ensure rsyslog is running
+  systemd:
+    name: rsyslog
+    state: started
+    enabled: yes

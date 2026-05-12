@@ -1,0 +1,43 @@
+﻿# Dependency map in Graphviz format
+# Shows which states depend on which
+
+digraph G {
+    rankdir=TB;
+    
+    # Core dependencies
+    "ntp" -> "common"
+    "ssh" -> "common"
+    "users" -> "ldap"
+    "firewall" -> "common"
+    
+    # Storage dependencies
+    "zfs" -> "storage_base"
+    "nfs_server" -> "zfs"
+    "nfs_client" -> "nfs_server"
+    "iscsi_target" -> "storage_base"
+    
+    # HPC dependencies - LONG chain
+    "munge" -> "common"
+    "slurm_controller" -> "munge"
+    "slurm_controller" -> "database"
+    "slurm_compute" -> "slurm_controller"
+    "lustre_mds" -> "storage_base"
+    "lustre_client" -> "lustre_mds"
+    
+    # GPU dependencies
+    "nvidia_drivers" -> "kernel_headers"
+    "cuda" -> "nvidia_drivers"
+    "cudnn" -> "cuda"
+    "tensorflow" -> "cudnn"
+    "pytorch" -> "cudnn"
+    
+    # Kubernetes dependencies
+    "kubeadm" -> "docker"
+    "calico" -> "kubeadm"
+    "ingress" -> "calico"
+    
+    # Monitoring
+    "icinga2_master" -> "database"
+    "icinga2_agent" -> "icinga2_master"
+    "prometheus" -> "firewall"
+}

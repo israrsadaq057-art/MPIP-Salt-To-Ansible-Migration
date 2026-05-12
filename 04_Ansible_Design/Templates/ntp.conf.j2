@@ -1,0 +1,17 @@
+﻿# ntp.conf.j2 – NTP configuration template
+# Managed by Ansible
+
+driftfile /var/lib/ntp/ntp.drift
+statsdir /var/log/ntpstats/
+
+leapfile /usr/share/zoneinfo/leap-seconds.list
+
+{% for server in ntp_servers %}
+server {{ server }} iburst
+{% endfor %}
+
+restrict -4 default kod notrap nomodify nopeer noquery
+restrict -6 default kod notrap nomodify nopeer noquery
+
+restrict 127.0.0.1
+restrict ::1

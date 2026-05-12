@@ -1,0 +1,67 @@
+﻿# kubeadm/tasks/main.yml
+# Kubernetes cluster setup
+
+- name: Load kernel modules for k8s
+  modprobe:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - overlay
+    - br_netfilter
+
+- name: Configure sysctl for Kubernetes
+  sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    state: present
+    reload: yes
+  loop:
+    - { name: 'net.bridge.bridge-nf-call-iptables', value: '1' }
+    - { name: 'net.ipv4.ip_forward', value: '1' }
+
+- name: Install Kubernetes packages
+  apt:
+    name:
+      - kubelet
+      - kubeadm
+      - kubectl
+    state: present
+    update_cache: yes
+
+- name: Hold Kubernetes packages
+  dpkg_selections:
+    name: "{{ item }}"
+    selection: hold
+  loop:
+    - kubelet
+    - kubeadm
+    - kubectl
+
+- name: Initialize cluster on master
+  command: kubeadm init --pod-network-cidr=192.168.0.0/16
+  args:
+    creates: /etc/kubernetes/admin.conf
+  when: inventory_hostname in groups['k8s_masters'] and inventory_hostname == groups['k8s_masters'][0]
+
+- name: Create kubeconfig for user
+  file:
+    path: /root/.kube
+    state: directory
+    mode: '0755'
+  when: inventory_hostname in groups['k8s_masters']
+
+- name: Copy admin.conf
+  copy:
+    src: /etc/kubernetes/admin.conf
+    dest: /root/.kube/config
+    remote_src: yes
+  when: inventory_hostname in groups['k8s_masters']
+
+- name: Get join command
+  command: kubeadm token create --print-join-command
+  register: join_command
+  when: inventory_hostname in groups['k8s_masters'] and inventory_hostname == groups['k8s_masters'][0]
+
+- name: Join worker nodes
+  command: "{{ hostvars[groups['k8s_masters'][0]]['join_command']['stdout'] }}"
+  when: inventory_hostname in groups['k8s_workers']

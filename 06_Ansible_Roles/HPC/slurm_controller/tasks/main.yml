@@ -1,0 +1,66 @@
+﻿# slurm_controller/tasks/main.yml
+# SLURM controller configuration
+
+- name: Install SLURM controller packages
+  apt:
+    name:
+      - slurm-wlm
+      - slurm-client
+      - slurmctld
+      - slurmdbd
+    state: present
+
+- name: Create SLURM directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: slurm
+    group: slurm
+    mode: '0755'
+  loop:
+    - /var/spool/slurmctld
+    - /var/log/slurm
+    - /etc/slurm-llnl
+
+- name: Deploy slurm.conf
+  template:
+    src: slurm.conf.j2
+    dest: /etc/slurm-llnl/slurm.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: restart slurmctld
+
+- name: Deploy cgroup.conf
+  template:
+    src: cgroup.conf.j2
+    dest: /etc/slurm-llnl/cgroup.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: restart slurmctld
+
+- name: Configure SLURM database
+  when: inventory_hostname == slurm_controller
+  block:
+    - name: Create SLURM database
+      mysql_db:
+        name: slurm_acct_db
+        state: present
+
+    - name: Create SLURM database user
+      mysql_user:
+        name: slurm
+        password: "{{ slurm_db_password }}"
+        priv: 'slurm_acct_db.*:ALL'
+        state: present
+
+- name: Start SLURM services
+  systemd:
+    name: "{{ item }}"
+    state: started
+    enabled: yes
+  loop:
+    - munge
+    - slurmctld
+    - slurmdbd

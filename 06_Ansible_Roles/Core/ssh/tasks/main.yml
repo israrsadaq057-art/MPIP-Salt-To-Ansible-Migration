@@ -1,0 +1,41 @@
+﻿# ssh/tasks/main.yml
+# SSH hardening based on our Salt config
+
+- name: Install OpenSSH server
+  apt:
+    name: openssh-server
+    state: present
+  when: ansible_os_family == "Debian"
+  tags: ssh
+
+- name: Install OpenSSH on Rocky
+  yum:
+    name: openssh-server
+    state: present
+  when: ansible_os_family == "RedHat"
+  tags: ssh
+
+- name: Backup current sshd_config
+  copy:
+    src: /etc/ssh/sshd_config
+    dest: "/etc/ssh/sshd_config.backup.{{ ansible_date_time.epoch }}"
+    remote_src: yes
+  tags: ssh_backup
+
+- name: Deploy hardened SSH config
+  template:
+    src: sshd_config.j2
+    dest: /etc/ssh/sshd_config
+    owner: root
+    group: root
+    mode: '0644'
+    validate: /usr/sbin/sshd -t -f %s
+  notify: restart ssh
+  tags: ssh_config
+
+- name: Ensure SSH service is running
+  systemd:
+    name: ssh
+    state: started
+    enabled: yes
+  tags: ssh_service

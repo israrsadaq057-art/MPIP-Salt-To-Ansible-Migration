@@ -1,0 +1,40 @@
+﻿# icinga2/tasks/main.yml
+# Icinga2 monitoring configuration
+
+- name: Add Icinga repository
+  apt_repository:
+    repo: "deb https://packages.icinga.com/ubuntu icinga-{{ ansible_distribution_release }} main"
+    state: present
+
+- name: Add Icinga key
+  apt_key:
+    url: https://packages.icinga.com/icinga.key
+    state: present
+
+- name: Install Icinga2
+  apt:
+    name:
+      - icinga2
+      - monitoring-plugins
+    state: present
+
+- name: Install Icinga2 features
+  command: icinga2 feature enable {{ item }}
+  loop:
+    - api
+    - checker
+    - notification
+    - ido-mysql
+  when: inventory_hostname in groups['monitoring']
+
+- name: Configure Icinga2 zones
+  template:
+    src: zones.conf.j2
+    dest: /etc/icinga2/zones.conf
+  notify: restart icinga2
+
+- name: Start Icinga2 service
+  systemd:
+    name: icinga2
+    state: started
+    enabled: yes

@@ -1,0 +1,22 @@
+﻿# tensorflow/tasks/main.yml
+# TensorFlow with GPU support
+
+- name: Install pip
+  apt:
+    name: python3-pip
+    state: present
+
+- name: Install TensorFlow with GPU support
+  pip:
+    name: tensorflow[and-cuda]
+    state: present
+    executable: pip3
+
+- name: Create test script
+  copy:
+    content: |
+      import tensorflow as tf
+      print("TensorFlow version:", tf.__version__)
+      print("GPU available:", tf.config.list_physical_devices('GPU'))
+    dest: /tmp/test_tf.py
+    mode: '0755'

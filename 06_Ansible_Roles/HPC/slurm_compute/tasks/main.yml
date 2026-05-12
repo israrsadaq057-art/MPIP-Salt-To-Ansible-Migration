@@ -1,0 +1,38 @@
+﻿# slurm_compute/tasks/main.yml
+# SLURM compute node configuration (512 nodes)
+
+- name: Install SLURM compute packages
+  apt:
+    name:
+      - slurm-wlm
+      - slurmd
+    state: present
+
+- name: Create compute node directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: slurm
+    group: slurm
+    mode: '0755'
+  loop:
+    - /var/spool/slurmd
+    - /var/log/slurm
+
+- name: Copy slurm.conf from controller
+  synchronize:
+    src: /etc/slurm-llnl/slurm.conf
+    dest: /etc/slurm-llnl/slurm.conf
+    delegate_to: "{{ slurm_controller }}"
+
+- name: Ensure munge service is running
+  systemd:
+    name: munge
+    state: started
+    enabled: yes
+
+- name: Start slurmd service
+  systemd:
+    name: slurmd
+    state: started
+    enabled: yes

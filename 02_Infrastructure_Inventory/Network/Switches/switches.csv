@@ -1,0 +1,12 @@
+﻿Hostname,IP_Address,Building,Model,Role,Ports,Uplink_Speed
+core-sw-01.mpip-halle.de,10.99.0.1,Neubau,Keller,Cisco Catalyst 9500-48Y4C,Core,48,100G
+core-sw-02.mpip-halle.de,10.99.0.2,Neubau,Keller,Cisco Catalyst 9500-48Y4C,Core,48,100G
+dist-dach-01.mpip-halle.de,10.99.0.10,Neubau,Dach,Cisco Catalyst 9300-48T,Distribution,48,40G
+dist-keller-01.mpip-halle.de,10.99.0.11,Neubau,Keller,Cisco Catalyst 9300-48T,Distribution,48,40G
+dist-altbau-eg-01.mpip-halle.de,10.99.0.12,Altbau,Erdgeschoss,Cisco Catalyst 9300-48T,Distribution,48,10G
+dist-altbau-og-01.mpip-halle.de,10.99.0.13,Altbau,Obergeschoss,Cisco Catalyst 9300-48T,Distribution,48,10G
+acc-dach-hpc-01.mpip-halle.de,10.99.0.20,Neubau,Dach,Cisco Catalyst 9200-48T,Access,48,10G
+acc-dach-gpu-01.mpip-halle.de,10.99.0.21,Neubau,Dach,Cisco Catalyst 9200-48T,Access,48,10G
+acc-keller-storage-01.mpip-halle.de,10.99.0.22,Neubau,Keller,Cisco Catalyst 9200-48T,Access,48,10G
+acc-altbau-dc-01.mpip-halle.de,10.99.0.23,Altbau,Erdgeschoss,Cisco Catalyst 9200-24T,Access,24,1G
+acc-altbau-web-01.mpip-halle.de,10.99.0.24,Altbau,Obergeschoss,Cisco Catalyst 9200-48T,Access,48,1G

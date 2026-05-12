@@ -1,0 +1,22 @@
+﻿# pytorch/tasks/main.yml
+# PyTorch with GPU support
+
+- name: Install PyTorch with CUDA
+  pip:
+    name:
+      - torch
+      - torchvision
+      - torchaudio
+    state: present
+    executable: pip3
+    extra_args: --index-url https://download.pytorch.org/whl/cu121
+
+- name: Create test script
+  copy:
+    content: |
+      import torch
+      print("PyTorch version:", torch.__version__)
+      print("CUDA available:", torch.cuda.is_available())
+      print("GPU count:", torch.cuda.device_count())
+    dest: /tmp/test_pytorch.py
+    mode: '0755'

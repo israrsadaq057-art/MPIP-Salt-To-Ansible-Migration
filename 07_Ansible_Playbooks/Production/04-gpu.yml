@@ -1,0 +1,30 @@
+﻿# 04-gpu.yml
+# GPU nodes configuration
+
+- name: "GPU CLUSTER DEPLOYMENT"
+  hosts: gpu_nodes
+  become: yes
+  serial: 20
+  roles:
+    - GPU.nvidia
+    - GPU.cuda
+    - GPU.tensorflow
+    - GPU.pytorch
+  tags: [gpu]
+
+- name: "GPU VALIDATION"
+  hosts: gpu_nodes
+  gather_facts: no
+  tasks:
+    - name: Check NVIDIA driver
+      command: nvidia-smi
+      register: nvidia_status
+      failed_when: "'No devices were found' in nvidia_status.stdout"
+
+    - name: Check CUDA
+      command: nvcc --version
+      register: cuda_status
+
+    - name: Run TensorFlow test
+      command: python3 /tmp/test_tf.py
+      register: tf_test

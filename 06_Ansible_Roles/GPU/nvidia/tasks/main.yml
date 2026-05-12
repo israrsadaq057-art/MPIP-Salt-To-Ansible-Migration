@@ -1,0 +1,35 @@
+﻿# nvidia/tasks/main.yml
+# NVIDIA driver installation for GPU nodes (256 servers)
+
+- name: Install NVIDIA driver dependencies
+  apt:
+    name:
+      - build-essential
+      - linux-headers-{{ ansible_kernel }}
+      - dkms
+    state: present
+
+- name: Install NVIDIA driver from repository
+  apt:
+    name: nvidia-driver-535
+    state: present
+  when: ansible_distribution == "Ubuntu"
+
+- name: Blacklist nouveau driver
+  copy:
+    content: |
+      blacklist nouveau
+      options nouveau modeset=0
+    dest: /etc/modprobe.d/blacklist-nouveau.conf
+  notify: update initramfs
+
+- name: Load nvidia drivers
+  modprobe:
+    name: nvidia
+    state: present
+
+- name: Ensure nvidia-persistenced service is running
+  systemd:
+    name: nvidia-persistenced
+    state: started
+    enabled: yes

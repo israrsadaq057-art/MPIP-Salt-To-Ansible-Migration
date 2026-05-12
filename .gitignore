@@ -53,3 +53,5 @@ test_output/
 # Logs
 logs/
 *.log
+
+ansible.cfg

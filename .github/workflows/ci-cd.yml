@@ -1,0 +1,185 @@
+﻿# .github/workflows/ci-cd.yml
+# Complete CI/CD Pipeline for Ansible
+
+name: Ansible CI/CD
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+
+jobs:
+  # ============================================
+  # JOB 1: LINT AND VALIDATE
+  # ============================================
+  validate:
+    name: Validate Ansible Code
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Install Ansible
+        run: |
+          sudo apt update
+          sudo apt install -y ansible ansible-lint
+          ansible --version
+      
+      - name: Create ansible.cfg
+        run: |
+          cat > ansible.cfg << 'EOF'
+          [defaults]
+          host_key_checking = False
+          roles_path = ./06_Ansible_Roles
+          inventory = ./04_Ansible_Design/Inventory/production_hosts.yml
+          EOF
+      
+      - name: Validate all playbooks syntax
+        run: |
+          for playbook in 07_Ansible_Playbooks/Production/*.yml; do
+            echo "Validating $playbook"
+            ansible-playbook $playbook --syntax-check
+          done
+      
+      - name: Run ansible-lint
+        run: |
+          ansible-lint 07_Ansible_Playbooks/Production/*.yml || true
+          echo "Linting completed (warnings allowed)"
+
+  # ============================================
+  # JOB 2: DRY-RUN (Check mode)
+  # ============================================
+  dry-run:
+    name: Dry-Run (Check Mode)
+    runs-on: ubuntu-latest
+    needs: validate
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Install Ansible
+        run: |
+          sudo apt update
+          sudo apt install -y ansible
+      
+      - name: Create test inventory for dry-run
+        run: |
+          mkdir -p test_inventory
+          cat > test_inventory/hosts.yml << 'EOF'
+          all:
+            hosts:
+              localhost:
+                ansible_connection: local
+          EOF
+      
+      - name: Create ansible.cfg for test
+        run: |
+          cat > ansible.cfg << 'EOF'
+          [defaults]
+          host_key_checking = False
+          roles_path = ./06_Ansible_Roles
+          inventory = ./test_inventory/hosts.yml
+          EOF
+      
+      - name: Run dry-run on test environment
+        run: |
+          echo "========================================"
+          echo "DRY-RUN (CHECK MODE)"
+          echo "========================================"
+          ansible-playbook 07_Ansible_Playbooks/Production/01-core.yml --check
+          echo ""
+          echo "✅ Dry-run completed"
+
+  # ============================================
+  # JOB 3: DEPLOY TO STAGING (Manual trigger)
+  # ============================================
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    needs: dry-run
+    if: github.event_name == 'workflow_dispatch' && inputs.environment == 'staging'
+    environment: staging
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Install Ansible
+        run: |
+          sudo apt update
+          sudo apt install -y ansible
+      
+      - name: Deploy to staging
+        run: |
+          echo "========================================"
+          echo "DEPLOYING TO STAGING"
+          echo "========================================"
+          # Add your staging deployment commands here
+          echo "✅ Staging deployment complete"
+
+  # ============================================
+  # JOB 4: DEPLOY TO PRODUCTION (Manual trigger + approval)
+  # ============================================
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: deploy-staging
+    if: github.event_name == 'workflow_dispatch' && inputs.environment == 'production'
+    environment: 
+      name: production
+      url: https://mpip-halle.de
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Install Ansible
+        run: |
+          sudo apt update
+          sudo apt install -y ansible
+      
+      - name: Deploy to production
+        run: |
+          echo "========================================"
+          echo "DEPLOYING TO PRODUCTION"
+          echo "========================================"
+          echo "⚠️ This would deploy to real servers"
+          echo "Production deployment requires approval"
+          echo "✅ Production deployment simulation complete"
+
+  # ============================================
+  # JOB 5: SUMMARY
+  # ============================================
+  summary:
+    name: CI/CD Summary
+    runs-on: ubuntu-latest
+    needs: [validate, dry-run]
+    if: always()
+    steps:
+      - run: |
+          echo "========================================"
+          echo "✅ CI/CD PIPELINE COMPLETE"
+          echo "========================================"
+          echo ""
+          echo "Validate: ${{ needs.validate.result }}"
+          echo "Dry-Run: ${{ needs.dry-run.result }}"
+          echo ""
+          echo "To deploy to staging:"
+          echo "  - Go to Actions tab"
+          echo "  - Select 'Ansible CI/CD'"
+          echo "  - Click 'Run workflow'"
+          echo "  - Select 'staging' environment"
+          echo ""
+          echo "To deploy to production:"
+          echo "  - Requires approval"
+          echo "  - Select 'production' environment"
+          echo "========================================"

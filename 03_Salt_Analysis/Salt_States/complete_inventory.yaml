@@ -1,109 +1,110 @@
-ï»¿# Salt States Inventory â€“ All 500+ states we have
+---
+# Salt States Inventory – All 500+ states we have
 
 # Total count: around 523 states
 # This is based on the actual /srv/salt directory
 
 salt_states_list:
-  
+
   common_states: ~120 states
-    - ntp/init.sls (45 lines) â€“ low complexity
-    - ssh/init.sls (120 lines) â€“ medium
-    - users/init.sls (280 lines) â€“ high, has custom jinja
-    - groups/init.sls (45 lines) â€“ low
-    - sudoers/init.sls (60 lines) â€“ medium
-    - dns_client/init.sls (35 lines) â€“ low
-    - firewall/iptables.sls (95 lines) â€“ medium
-    - logging/rsyslog.sls (65 lines) â€“ low
-    - fail2ban/init.sls (55 lines) â€“ low
-    - auditd/init.sls (110 lines) â€“ medium
-    - timezone/init.sls (20 lines) â€“ low
-    - resolv_conf/init.sls (25 lines) â€“ low
-    - hostname/init.sls (15 lines) â€“ low
-    - hosts_file/init.sls (40 lines) â€“ low
-    - limits_conf/init.sls (30 lines) â€“ low
-    - sysctl/init.sls (50 lines) â€“ medium
-    - kernel_modules/init.sls (35 lines) â€“ low
-    - apt_repos/init.sls (70 lines) â€“ medium
-    - packages_base/init.sls (90 lines) â€“ medium
+    - ntp/init.sls (45 lines) – low complexity
+    - ssh/init.sls (120 lines) – medium
+    - users/init.sls (280 lines) – high, has custom jinja
+    - groups/init.sls (45 lines) – low
+    - sudoers/init.sls (60 lines) – medium
+    - dns_client/init.sls (35 lines) – low
+    - firewall/iptables.sls (95 lines) – medium
+    - logging/rsyslog.sls (65 lines) – low
+    - fail2ban/init.sls (55 lines) – low
+    - auditd/init.sls (110 lines) – medium
+    - timezone/init.sls (20 lines) – low
+    - resolv_conf/init.sls (25 lines) – low
+    - hostname/init.sls (15 lines) – low
+    - hosts_file/init.sls (40 lines) – low
+    - limits_conf/init.sls (30 lines) – low
+    - sysctl/init.sls (50 lines) – medium
+    - kernel_modules/init.sls (35 lines) – low
+    - apt_repos/init.sls (70 lines) – medium
+    - packages_base/init.sls (90 lines) – medium
 
   storage_states: ~85 states
-    - zfs/pools.sls (180 lines) â€“ high, many custom grains
-    - zfs/datasets.sls (220 lines) â€“ high
-    - zfs/snapshots.sls (95 lines) â€“ medium
-    - zfs/replication.sls (140 lines) â€“ high
-    - nfs/server.sls (75 lines) â€“ medium, depend on zfs
-    - nfs/client.sls (40 lines) â€“ low
-    - nfs/exports.sls (55 lines) â€“ medium
-    - iscsi/target.sls (110 lines) â€“ medium
-    - iscsi/initiator.sls (35 lines) â€“ low
-    - backup/borgmatic.sls (85 lines) â€“ medium
-    - backup/rsync.sls (60 lines) â€“ low
-    - backup/schedule.sls (45 lines) â€“ low
+    - zfs/pools.sls (180 lines) – high, many custom grains
+    - zfs/datasets.sls (220 lines) – high
+    - zfs/snapshots.sls (95 lines) – medium
+    - zfs/replication.sls (140 lines) – high
+    - nfs/server.sls (75 lines) – medium, depend on zfs
+    - nfs/client.sls (40 lines) – low
+    - nfs/exports.sls (55 lines) – medium
+    - iscsi/target.sls (110 lines) – medium
+    - iscsi/initiator.sls (35 lines) – low
+    - backup/borgmatic.sls (85 lines) – medium
+    - backup/rsync.sls (60 lines) – low
+    - backup/schedule.sls (45 lines) – low
 
   hpc_states: ~95 states
-    - slurm/controller.sls (320 lines) â€“ high, complex dependencies
-    - slurm/compute.sls (95 lines) â€“ medium
-    - slurm/database.sls (75 lines) â€“ medium
-    - slurm/accounting.sls (60 lines) â€“ medium
-    - munge/init.sls (45 lines) â€“ low
-    - lustre/mds.sls (140 lines) â€“ high
-    - lustre/oss.sls (110 lines) â€“ medium
-    - lustre/client.sls (55 lines) â€“ low
-    - lustre/stripe.sls (40 lines) â€“ low
+    - slurm/controller.sls (320 lines) – high, complex dependencies
+    - slurm/compute.sls (95 lines) – medium
+    - slurm/database.sls (75 lines) – medium
+    - slurm/accounting.sls (60 lines) – medium
+    - munge/init.sls (45 lines) – low
+    - lustre/mds.sls (140 lines) – high
+    - lustre/oss.sls (110 lines) – medium
+    - lustre/client.sls (55 lines) – low
+    - lustre/stripe.sls (40 lines) – low
 
   gpu_states: ~45 states
-    - nvidia/drivers.sls (85 lines) â€“ medium
-    - nvidia/cuda.sls (120 lines) â€“ medium
-    - nvidia/cudnn.sls (60 lines) â€“ low
-    - nvidia/container_runtime.sls (50 lines) â€“ low
-    - tensorflow/install.sls (70 lines) â€“ medium
-    - pytorch/install.sls (65 lines) â€“ medium
-    - jax/install.sls (55 lines) â€“ low
+    - nvidia/drivers.sls (85 lines) – medium
+    - nvidia/cuda.sls (120 lines) – medium
+    - nvidia/cudnn.sls (60 lines) – low
+    - nvidia/container_runtime.sls (50 lines) – low
+    - tensorflow/install.sls (70 lines) – medium
+    - pytorch/install.sls (65 lines) – medium
+    - jax/install.sls (55 lines) – low
 
   kubernetes_states: ~40 states
-    - kubeadm/init.sls (110 lines) â€“ medium
-    - calico/install.sls (45 lines) â€“ low
-    - ingress/nginx.sls (60 lines) â€“ medium
-    - cert_manager/install.sls (35 lines) â€“ low
-    - metrics_server/install.sls (25 lines) â€“ low
+    - kubeadm/init.sls (110 lines) – medium
+    - calico/install.sls (45 lines) – low
+    - ingress/nginx.sls (60 lines) – medium
+    - cert_manager/install.sls (35 lines) – low
+    - metrics_server/install.sls (25 lines) – low
 
   docker_states: ~20 states
-    - docker/engine.sls (55 lines) â€“ low
-    - docker/compose.sls (40 lines) â€“ low
-    - docker/registry.sls (50 lines) â€“ medium
+    - docker/engine.sls (55 lines) – low
+    - docker/compose.sls (40 lines) – low
+    - docker/registry.sls (50 lines) – medium
 
   monitoring_states: ~55 states
-    - icinga2/master.sls (130 lines) â€“ high
-    - icinga2/satellite.sls (70 lines) â€“ medium
-    - icinga2/agent.sls (45 lines) â€“ low
-    - prometheus/server.sls (85 lines) â€“ medium
-    - prometheus/exporters.sls (60 lines) â€“ low
-    - grafana/install.sls (50 lines) â€“ low
-    - elasticsearch/install.sls (70 lines) â€“ medium
-    - logstash/install.sls (55 lines) â€“ low
-    - kibana/install.sls (30 lines) â€“ low
+    - icinga2/master.sls (130 lines) – high
+    - icinga2/satellite.sls (70 lines) – medium
+    - icinga2/agent.sls (45 lines) – low
+    - prometheus/server.sls (85 lines) – medium
+    - prometheus/exporters.sls (60 lines) – low
+    - grafana/install.sls (50 lines) – low
+    - elasticsearch/install.sls (70 lines) – medium
+    - logstash/install.sls (55 lines) – low
+    - kibana/install.sls (30 lines) – low
 
   security_states: ~30 states
-    - ossec/manager.sls (80 lines) â€“ medium
-    - ossec/agent.sls (45 lines) â€“ low
-    - vault/server.sls (100 lines) â€“ high
-    - vault/agent.sls (55 lines) â€“ low
-    - tripwire/init.sls (65 lines) â€“ medium
+    - ossec/manager.sls (80 lines) – medium
+    - ossec/agent.sls (45 lines) – low
+    - vault/server.sls (100 lines) – high
+    - vault/agent.sls (55 lines) – low
+    - tripwire/init.sls (65 lines) – medium
 
   windows_states: ~35 states
-    - ad/dc.sls (120 lines) â€“ high, windows modules
-    - dns/server.sls (45 lines) â€“ medium
-    - dhcp/server.sls (50 lines) â€“ medium
-    - file_server/smb.sls (60 lines) â€“ medium
-    - sql/install.sls (80 lines) â€“ medium
-    - exchange/install.sls (150 lines) â€“ high
+    - ad/dc.sls (120 lines) – high, windows modules
+    - dns/server.sls (45 lines) – medium
+    - dhcp/server.sls (50 lines) – medium
+    - file_server/smb.sls (60 lines) – medium
+    - sql/install.sls (80 lines) – medium
+    - exchange/install.sls (150 lines) – high
 
   research_states: ~28 states
-    - quantum/qiskit.sls (50 lines) â€“ low
-    - quantum/cirq.sls (40 lines) â€“ low
-    - nano/vasp.sls (70 lines) â€“ medium
-    - nano/quantum_espresso.sls (65 lines) â€“ medium
-    - bio/nextflow.sls (45 lines) â€“ low
-    - bio/cellranger.sls (35 lines) â€“ low
+    - quantum/qiskit.sls (50 lines) – low
+    - quantum/cirq.sls (40 lines) – low
+    - nano/vasp.sls (70 lines) – medium
+    - nano/quantum_espresso.sls (65 lines) – medium
+    - bio/nextflow.sls (45 lines) – low
+    - bio/cellranger.sls (35 lines) – low
 
 total_states_count: 523

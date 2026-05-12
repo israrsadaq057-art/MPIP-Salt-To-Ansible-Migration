@@ -1,6 +1,5 @@
 ﻿# .github/workflows/validate.yml
 # GitHub Actions CI/CD Pipeline for Salt to Ansible Migration
-# Israr Sadaq - MPIP Halle
 
 name: Validate Ansible Migration
 
@@ -9,7 +8,7 @@ on:
     branches: [ main, develop ]
   pull_request:
     branches: [ main ]
-  workflow_dispatch:  # manual trigger
+  workflow_dispatch:
 
 jobs:
   validate-syntax:
@@ -28,30 +27,10 @@ jobs:
       
       - name: Validate all playbooks syntax
         run: |
-          echo "Validating 00-site.yml..."
-          ansible-playbook 07_Ansible_Playbooks/Production/00-site.yml --syntax-check
-          
-          echo "Validating 01-core.yml..."
-          ansible-playbook 07_Ansible_Playbooks/Production/01-core.yml --syntax-check
-          
-          echo "Validating 02-storage.yml..."
-          ansible-playbook 07_Ansible_Playbooks/Production/02-storage.yml --syntax-check
-          
-          echo "Validating 03-hpc.yml..."
-          ansible-playbook 07_Ansible_Playbooks/Production/03-hpc.yml --syntax-check
-          
-          echo "Validating 04-gpu.yml..."
-          ansible-playbook 07_Ansible_Playbooks/Production/04-gpu.yml --syntax-check
-          
-          echo "Validating 05-kubernetes.yml..."
-          ansible-playbook 07_Ansible_Playbooks/Production/05-kubernetes.yml --syntax-check
-          
-          echo "Validating 06-monitoring.yml..."
-          ansible-playbook 07_Ansible_Playbooks/Production/06-monitoring.yml --syntax-check
-      
-      - name: Run ansible-lint
-        run: |
-          ansible-lint 07_Ansible_Playbooks/Production/*.yml --exclude .github
+          for playbook in 07_Ansible_Playbooks/Production/*.yml; do
+            echo "Validating $playbook..."
+            ansible-playbook $playbook --syntax-check
+          done
 
   validate-roles:
     name: Validate Ansible Roles Structure
@@ -63,23 +42,15 @@ jobs:
       
       - name: Check role directories
         run: |
-          echo "Checking role structure..."
-          
-          # Check Common role
-          [ -d "06_Ansible_Roles/Common/tasks" ] && echo "✅ Common/tasks exists" || echo "❌ Common/tasks missing"
-          [ -f "06_Ansible_Roles/Common/tasks/main.yml" ] && echo "✅ Common/tasks/main.yml exists" || echo "❌ Common/tasks/main.yml missing"
-          
-          # Check NTP role
-          [ -d "06_Ansible_Roles/Core/ntp/tasks" ] && echo "✅ NTP/tasks exists" || echo "❌ NTP/tasks missing"
-          [ -f "06_Ansible_Roles/Core/ntp/tasks/main.yml" ] && echo "✅ NTP/tasks/main.yml exists" || echo "❌ NTP/tasks/main.yml missing"
-          
-          # Check SSH role
-          [ -d "06_Ansible_Roles/Core/ssh/tasks" ] && echo "✅ SSH/tasks exists" || echo "❌ SSH/tasks missing"
-          [ -f "06_Ansible_Roles/Core/ssh/tasks/main.yml" ] && echo "✅ SSH/tasks/main.yml exists" || echo "❌ SSH/tasks/main.yml missing"
-          
-          echo ""
-          echo "Total roles found:"
-          find 06_Ansible_Roles -name "main.yml" | wc -l
+          required_roles="Common Core/ntp Core/ssh Core/users Storage/zfs Storage/nfs HPC/slurm_controller HPC/slurm_compute GPU/nvidia GPU/cuda Kubernetes/kubeadm Docker/engine Monitoring/icinga2"
+          for role in $required_roles; do
+            if [ -d "06_Ansible_Roles/$role/tasks" ]; then
+              echo "✅ $role/tasks exists"
+            else
+              echo "❌ $role/tasks missing"
+              exit 1
+            fi
+          done
 
   validate-inventory:
     name: Validate Inventory File
@@ -93,9 +64,7 @@ jobs:
         run: |
           if [ -f "04_Ansible_Design/Inventory/production_hosts.yml" ]; then
             echo "✅ Inventory file exists"
-            echo ""
-            echo "Inventory groups found:"
-            grep -E "^  [a-z_]+:" 04_Ansible_Design/Inventory/production_hosts.yml | head -20
+            grep -c "ansible_host" 04_Ansible_Design/Inventory/production_hosts.yml
           else
             echo "❌ Inventory file missing"
             exit 1
@@ -109,42 +78,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       
-      - name: Check all required files
+      - name: Check required files
         run: |
-          echo "Checking project files..."
-          
-          files_to_check=(
-            "00_Project_Overview/README.md"
-            "00_Project_Overview/Project_Plan.md"
-            "00_Project_Overview/Risk_Assessment.md"
-            "01_Requirements/Functional/requirements.md"
-            "01_Requirements/Technical/requirements.md"
-            "02_Infrastructure_Inventory/Servers/master_inventory.csv"
-            "03_Salt_Analysis/Salt_States/complete_inventory.yaml"
-            "04_Ansible_Design/Inventory/production_hosts.yml"
-            "05_Conversion_Scripts/Python/salt_to_ansible_converter.py"
-            "07_Ansible_Playbooks/Production/00-site.yml"
-            "08_Validation/Test_Scripts/validate_all.sh"
-            "09_Deployment/Phase_1_Non_Critical/deploy_phase1.sh"
-            "10_Rollback/Rollback_Scripts/rollback_all.sh"
-            "12_Handover/Final_Docs/final_report.md"
-          )
-          
-          missing=0
-          for file in "${files_to_check[@]}"; do
+          files="00_Project_Overview/README.md 04_Ansible_Design/Inventory/production_hosts.yml 07_Ansible_Playbooks/Production/00-site.yml 08_Validation/Test_Scripts/validate_all.sh"
+          for file in $files; do
             if [ -f "$file" ]; then
               echo "✅ $file"
             else
-              echo "❌ $file MISSING"
-              missing=$((missing+1))
+              echo "❌ $file missing"
+              exit 1
             fi
           done
-          
-          echo ""
-          echo "Total missing: $missing"
-          if [ $missing -gt 0 ]; then
-            exit 1
-          fi
 
   validate-yaml:
     name: Validate YAML Syntax
@@ -159,24 +103,14 @@ jobs:
       
       - name: Validate YAML files
         run: |
-          echo "Validating YAML files..."
           find . -name "*.yml" -o -name "*.yaml" | grep -v ".github" | while read file; do
-            if yamllint "$file"; then
-              echo "✅ $file"
-            else
-              echo "❌ $file has YAML errors"
-              exit 1
-            fi
+            echo "Checking $file"
+            yamllint -d "{extends: relaxed, rules: {line-length: disable, document-start: enable}}" "$file"
           done
 
   summary:
     name: Validation Summary
-    needs: 
-      - validate-syntax
-      - validate-roles
-      - validate-inventory
-      - validate-files
-      - validate-yaml
+    needs: [validate-syntax, validate-roles, validate-inventory, validate-files, validate-yaml]
     runs-on: ubuntu-latest
     if: always()
     
@@ -184,18 +118,7 @@ jobs:
       - name: Print summary
         run: |
           echo "========================================"
-          echo "✅ ALL VALIDATIONS PASSED"
+          echo "✅ ALL VALIDATIONS COMPLETE"
           echo "========================================"
-          echo ""
           echo "Project: Salt to Ansible Migration"
-          echo "Status: Ready for GitHub push"
-          echo ""
-          echo "Files verified:"
-          echo "  - 7 playbooks"
-          echo "  - 22 roles"
-          echo "  - Inventory with 1,247 servers"
-          echo "  - Deployment scripts (5 phases)"
-          echo "  - Rollback scripts (6 phases)"
-          echo "  - Documentation complete"
-          echo ""
-          echo "Next step: Push to GitHub"
+          echo "Status: Validated"

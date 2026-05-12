@@ -1,4 +1,5 @@
-﻿# Salt Pillars Inventory – All 89 pillar files
+﻿---
+# Salt Pillars Inventory – All 89 pillar files
 # Pillars contain variables and secrets. Not in git (normally)
 
 pillar_breakdown:

@@ -1,4 +1,5 @@
-﻿# all.yml – Global variables for every server
+﻿---
+# all.yml – Global variables for every server
 # Applies to ALL 1,247 servers
 
 ---

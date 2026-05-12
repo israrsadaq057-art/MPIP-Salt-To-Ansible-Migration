@@ -1,4 +1,5 @@
-﻿# Custom Salt Modules Inventory
+﻿---
+# Custom Salt Modules Inventory
 
 custom_modules:
   - name: quantum_api.py

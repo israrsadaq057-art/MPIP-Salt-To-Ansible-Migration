@@ -1,4 +1,5 @@
-﻿# Salt States Inventory – Complete List
+﻿---
+# Salt States Inventory – Complete List
 
 salt_states:
   common:

@@ -1,5 +1,4 @@
 ﻿# engine/handlers/main.yml
-
 - name: restart docker
   systemd:
     name: docker

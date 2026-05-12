@@ -1,5 +1,4 @@
 ﻿# ssh/handlers/main.yml
-
 - name: restart ssh
   systemd:
     name: ssh

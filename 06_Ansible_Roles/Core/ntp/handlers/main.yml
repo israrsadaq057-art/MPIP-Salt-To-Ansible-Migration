@@ -1,5 +1,4 @@
 ﻿# ntp/handlers/main.yml
-
 - name: restart ntp
   systemd:
     name: ntp

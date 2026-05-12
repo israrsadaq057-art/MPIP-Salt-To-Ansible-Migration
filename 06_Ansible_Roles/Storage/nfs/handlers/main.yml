@@ -1,5 +1,4 @@
 ﻿# nfs/handlers/main.yml
-
 - name: reload nfs
   systemd:
     name: nfs-server

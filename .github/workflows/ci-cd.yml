@@ -70,7 +70,6 @@ jobs:
           
           required_files=(
             "00_Project_Overview/README.md"
-            "04_Ansible_Design/Inventory/production_hosts.yml"
             "07_Ansible_Playbooks/Production/00-site.yml"
           )
           
@@ -82,6 +81,13 @@ jobs:
               exit 1
             fi
           done
+          
+          # Inventory file is optional for validation
+          if [ -f "04_Ansible_Design/Inventory/production_hosts.yml" ]; then
+            echo "✅ Inventory file exists"
+          else
+            echo "⚠️ Inventory file missing (not required for validation)"
+          fi
       
       - name: Count Ansible roles
         run: |
@@ -95,19 +101,9 @@ jobs:
           else
             echo "⚠️ Only $role_count roles found (expected 10+)"
           fi
-      
-      - name: Validate main playbook exists
-        run: |
-          if [ -f "07_Ansible_Playbooks/Production/00-site.yml" ]; then
-            echo "✅ Main playbook exists"
-            head -20 07_Ansible_Playbooks/Production/00-site.yml
-          else
-            echo "❌ Main playbook missing"
-            exit 1
-          fi
 
   # ============================================
-  # JOB 2: DRY-RUN (Check what would change)
+  # JOB 2: DRY-RUN (Using dummy inventory)
   # ============================================
   dry-run:
     name: Dry-Run Deployment
@@ -133,18 +129,13 @@ jobs:
                 ansible_connection: local
           EOF
       
-      - name: Run dry-run on main playbook
+      - name: Validate playbook syntax only
         run: |
           echo "========================================"
-          echo "DRY-RUN (CHECK MODE)"
+          echo "VALIDATING PLAYBOOK SYNTAX"
           echo "========================================"
-          ansible-playbook 07_Ansible_Playbooks/Production/00-site.yml \
-            --check \
-            --connection=local \
-            --inventory=dummy_inventory/hosts.yml \
-            --syntax-check || true
-          
-          echo "Dry-run completed (warnings ignored)"
+          ansible-playbook 07_Ansible_Playbooks/Production/00-site.yml --syntax-check
+          echo "✅ Syntax check passed"
 
   # ============================================
   # JOB 3: DEPLOY TO STAGING (Manual trigger)

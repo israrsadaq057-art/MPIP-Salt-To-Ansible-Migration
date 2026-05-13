@@ -1,0 +1,22 @@
+﻿---
+- name: Install ZFS packages
+  apt:
+    name:
+      - zfsutils-linux
+      - zfs-zed
+    state: present
+
+- name: Create ZFS pools
+  command: zpool create -f {{ item.name }} {{ item.disks | join(' ') }}
+  loop: "{{ zfs_pools }}"
+  when: zfs_pools is defined
+
+- name: Create ZFS datasets
+  command: zfs create -o mountpoint={{ item.mountpoint }} {{ item.pool }}/{{ item.dataset }}
+  loop: "{{ zfs_datasets }}"
+
+- name: Start ZFS event daemon
+  systemd:
+    name: zed
+    state: started
+    enabled: yes

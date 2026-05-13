@@ -1,0 +1,19 @@
+﻿---
+- name: Install NVIDIA drivers
+  apt:
+    name: nvidia-driver-535
+    state: present
+
+- name: Blacklist nouveau driver
+  copy:
+    content: |
+      blacklist nouveau
+      options nouveau modeset=0
+    dest: /etc/modprobe.d/blacklist-nouveau.conf
+  notify: update initramfs
+
+- name: Start nvidia-persistenced
+  systemd:
+    name: nvidia-persistenced
+    state: started
+    enabled: yes

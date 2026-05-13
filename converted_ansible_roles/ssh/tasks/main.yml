@@ -1,0 +1,17 @@
+﻿---
+- name: Install openssh-server
+  apt:
+    name: openssh-server
+    state: present
+
+- name: Deploy sshd_config
+  template:
+    src: sshd_config.j2
+    dest: /etc/ssh/sshd_config
+  notify: restart ssh
+
+- name: Start ssh service
+  systemd:
+    name: ssh
+    state: started
+    enabled: yes

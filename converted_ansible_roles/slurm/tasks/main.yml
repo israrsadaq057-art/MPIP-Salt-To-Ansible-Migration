@@ -1,0 +1,32 @@
+﻿---
+- name: Install SLURM packages
+  apt:
+    name:
+      - slurm-wlm
+      - munge
+    state: present
+
+- name: Deploy Munge key
+  copy:
+    content: "{{ munge_key }}"
+    dest: /etc/munge/munge.key
+    mode: '0400'
+    owner: munge
+    group: munge
+  no_log: true
+
+- name: Deploy SLURM configuration
+  template:
+    src: slurm.conf.j2
+    dest: /etc/slurm-llnl/slurm.conf
+  notify: restart slurmctld
+
+- name: Start SLURM services
+  systemd:
+    name: "{{ item }}"
+    state: started
+    enabled: yes
+  loop:
+    - munge
+    - slurmctld
+    - slurmd

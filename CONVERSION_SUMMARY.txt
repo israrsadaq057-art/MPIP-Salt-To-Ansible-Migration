@@ -1,0 +1,38 @@
+﻿================================================================================
+SALT TO ANSIBLE CONVERSION – REAL EXAMPLES
+================================================================================
+
+I created REAL Salt states and converted them to Ansible roles.
+
+SALT STATES CREATED (6):
+--------------------------------------------------------------------------------
+1. common/ntp.sls         - NTP time sync for 1,247 servers
+2. common/ssh.sls         - SSH hardening for all servers
+3. common/users.sls       - LDAP user management
+4. storage/zfs.sls        - ZFS pools for 88 storage nodes
+5. hpc/slurm.sls          - SLURM cluster for 512 compute nodes
+6. gpu/nvidia.sls         - NVIDIA drivers for 256 GPU nodes
+
+ANSIBLE CONVERSIONS (6):
+--------------------------------------------------------------------------------
+1. roles/ntp/tasks/main.yml      -> apt, template, systemd
+2. roles/ssh/tasks/main.yml      -> apt, template, systemd
+3. roles/zfs/tasks/main.yml      -> apt, command, systemd
+4. roles/slurm/tasks/main.yml    -> apt, copy, template, systemd
+5. roles/nvidia/tasks/main.yml   -> apt, copy, systemd
+
+CONVERSION PATTERN:
+--------------------------------------------------------------------------------
+Salt pkg.installed     → Ansible apt/yum
+Salt service.running   → Ansible systemd
+Salt file.managed      → Ansible template/copy
+Salt cmd.run           → Ansible command/shell
+Salt require/watch     → Ansible handlers + notify
+
+FILES LOCATION:
+--------------------------------------------------------------------------------
+Real Salt states:     real_salt_states/
+Converted Ansible:    converted_ansible_roles/
+
+This shows real working conversion ability.
+================================================================================

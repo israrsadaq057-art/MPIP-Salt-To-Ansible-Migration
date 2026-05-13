@@ -1,0 +1,4 @@
+﻿---
+- name: Common role placeholder
+  debug:
+    msg: "Common role executed - placeholder for migration"

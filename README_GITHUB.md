@@ -4,9 +4,9 @@
 
 Complete migration of 1,247 servers from SaltStack to Ansible for Max Planck Institute for Microstructure Physics, Halle.
 
-**Status:** ✅ Complete  
-**Duration:** 16 weeks  
-**Downtime:** 0 minutes
+**Status:** Complete  
+**Duration:**   
+**Downtime:** 
 
 ## Infrastructure
 

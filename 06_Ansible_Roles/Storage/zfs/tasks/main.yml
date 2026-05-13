@@ -21,30 +21,20 @@
   failed_when: false
 
 - name: Create ZFS pool if not exists
-  command: >
-    zpool create -f {{ item.name }}
-    {{ item.disk_list | join(' ') }}
+  command: zpool create -f {{ item.name }} {{ item.disk_list | join(' ') }}
   loop: "{{ zfs_pools }}"
   when: zfs_pools is defined
-  creates: "/dev/zvol/{{ item.name }}"
 
 - name: Set ZFS pool properties
-  command: >
-    zpool set {{ item.property }}={{ item.value }} {{ item.pool }}
+  command: zpool set {{ item.property }}={{ item.value }} {{ item.pool }}
   loop: "{{ zfs_pool_properties | default([]) }}"
 
 - name: Create ZFS datasets
-  command: >
-    zfs create -o mountpoint={{ item.mountpoint }}
-    -o compression={{ item.compression | default('lz4') }}
-    -o atime=off
-    {{ item.pool }}/{{ item.dataset }}
+  command: zfs create -o mountpoint={{ item.mountpoint }} -o compression={{ item.compression | default('lz4') }} -o atime=off {{ item.pool }}/{{ item.dataset }}
   loop: "{{ zfs_datasets | default([]) }}"
-  creates: "{{ item.mountpoint }}"
 
 - name: Set ZFS dataset quotas
-  command: >
-    zfs set quota={{ item.quota }} {{ item.pool }}/{{ item.dataset }}
+  command: zfs set quota={{ item.quota }} {{ item.pool }}/{{ item.dataset }}
   loop: "{{ zfs_datasets | selectattr('quota', 'defined') | list }}"
 
 - name: Start ZFS Event Daemon

@@ -9,12 +9,10 @@
 - name: Create iSCSI backstores
   command: targetcli /backstores/block create {{ item.name }} {{ item.device }}
   loop: "{{ iscsi_backstores | default([]) }}"
-  creates: "/sys/kernel/config/target/core/{{ item.name }}"
 
 - name: Create iSCSI targets
   command: targetcli /iscsi create {{ item.iqn }}
   loop: "{{ iscsi_targets | default([]) }}"
-  creates: "/sys/kernel/config/target/iscsi/{{ item.iqn }}"
 
 - name: Add LUNs to targets
   command: targetcli /iscsi/{{ item.iqn }}/tpg1/luns create /backstores/block/{{ item.backstore }}

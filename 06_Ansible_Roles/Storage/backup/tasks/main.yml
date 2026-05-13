@@ -15,13 +15,9 @@
     mode: '0700'
 
 - name: Initialize borg repository
-  command: >
-    borg init --encryption=repokey-blake2
-    {{ backup_path }}/{{ inventory_hostname }}
-  args:
-    creates: "{{ backup_path }}/{{ inventory_hostname }}/config"
+  command: borg init --encryption=repokey-blake2 {{ backup_path }}/{{ inventory_hostname }}
   environment:
-    BORG_PASSPHRASE: "{{ borg_passphrase }}"
+    BORG_PASSPASSPHRASE: "{{ borg_passphrase }}"
 
 - name: Deploy backup script
   template:

@@ -36,17 +36,4 @@
 3. **Resume**: When temp < 28°C for 30 minutes
 4. **Prevention**: Schedule migrations at 4 AM
 
-## Risk Heat Map
-Impact
-↑
-5 │ R-001 R-004 R-010
-│ R-008
-4 │ R-002 R-003 R-005 R-007
-│ R-009
-3 │
-2 │
-1 │ R-006
-└────────────────────────→ Probability
-1 2 3 4 5
-
-text
+ 
